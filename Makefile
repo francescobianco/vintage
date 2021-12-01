@@ -29,5 +29,5 @@ test-install:
 
 test-qbasic: test-install
 	@vintage install qbasic
-  @vintage run qbasic
+	@vintage run qbasic
   
