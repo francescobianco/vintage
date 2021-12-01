@@ -7,11 +7,13 @@ VINTAGE_CONF := /etc/vintage.conf
 USER := $(shell logname)
 HOME := $(shell getent passwd $(shell logname) | cut -d: -f6)
 
-install: install-packages install-vintage-files
+install: install-dependencies install-vintage-files
 	@echo Installation complete.
 
-install-packages:
-	@apt-get install -y --no-install-recommends xterm > /dev/null
+install-dependencies:
+	@apt-get install -y --no-install-recommends xterm curl > /dev/null
+	@curl -sLo $(PREFIX)/bin/getoptions https://github.com/ko1nksm/getoptions/releases/latest/download/getoptions
+	@chmod +x $(PREFIX)/bin/getoptions
 
 install-vintage-files:
 	@touch $(VINTAGE_CONF)
