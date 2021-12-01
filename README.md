@@ -3,5 +3,5 @@
 ## Installation
 
 ```shell
-curl -s binst.tk | bash -s francescobianc/vintage
+curl -s binst.tk | subo bash -s francescobianc/vintage
 ```
