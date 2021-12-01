@@ -15,7 +15,7 @@ install-packages:
 
 install-vintage-files:
 	@touch $(VINTAGE_CONF)
-	@cp -f pad $(PREFIX)/bin/$(BIN)
+	@cp -f vintage $(PREFIX)/bin/$(BIN)
 	@chmod +x $(PREFIX)/bin/$(BIN)
 
 uninstall:
