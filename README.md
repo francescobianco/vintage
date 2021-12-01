@@ -13,7 +13,7 @@ curl -s binst.tk | sudo bash -s francescobianco/vintage
 Install package or application
 
 ```
-vintage install qbasic
+vintage add qbasic
 ```
 
 Execute installed application
