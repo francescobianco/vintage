@@ -105,8 +105,8 @@ if [ $# -gt 0 ]; then
 			eval "$(getoptions parser_definition_version parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
-			curl -sL "https://github.com/francescobianco/vintage/raw/main/archive/${1}/MANIFEST.txt"
-			task="vintage --task --silent exec ${version}/setup.sh"
+			manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
+			[ -z "$2" ] && echo "$manifest" || echo "$manifest" | grep "^$2"
 			;;
 		run)
 			eval "$(getoptions parser_definition_run parse "$0")"
