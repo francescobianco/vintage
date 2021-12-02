@@ -29,7 +29,10 @@ uninstall:
 test-install:
 	@sudo make -s install
 
+test-add-qbasic:
+	@sudo make -s install-vintage-files
+	@bash vintage add qbasic edit
+
 test-qbasic: test-install
-	@vintage install qbasic
-	@vintage run qbasic
-  
+	@vintage run qbasic edit
+
