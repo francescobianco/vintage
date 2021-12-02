@@ -12,13 +12,15 @@ parser_definition() {
 	msg -- 'Options:'
 	flag    GLOBAL  -g --global    -- "global flag"
 	flag    TASK       --task      -- "global flag"
+	flag    SILENT  -s --silent    -- "global flag"
   disp    :usage  -h --help
 	disp    VERSION    --version
 
 	msg -- '' 'Commands:'
 	cmd add -- "subcommand 1"
-	cmd run -- "subcommand 2"
-	cmd exec -- "subcommand 3"
+	cmd version -- "subcommand 2"
+	cmd run -- "subcommand 3"
+  cmd exec -- "subcommand 4"
 }
 
 # shellcheck disable=SC1083
@@ -28,6 +30,16 @@ parser_definition_add() {
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_A  -a --flag-a
+	disp    :usage  -h --help
+}
+
+# shellcheck disable=SC1083
+parser_definition_version() {
+	setup   REST help:usage abbr:true -- \
+		"Usage: ${2##*/} version [options...] [arguments...]"
+	msg -- '' 'getoptions subcommand example' ''
+	msg -- 'Options:'
+	flag    FLAG_B  -b --flag-b
 	disp    :usage  -h --help
 }
 
@@ -44,18 +56,30 @@ parser_definition_run() {
 # shellcheck disable=SC1083
 parser_definition_exec() {
 	setup   REST help:usage abbr:true -- \
-		"Usage: ${2##*/} cmd3 [options...] [arguments...]"
+		"Usage: ${2##*/} exec [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_C  -c --flag-c
 	disp    :usage  -h --help
 }
 
+# shellcheck disable=SC1083
+error() {
+  echo "$@"
+  exit 1
+}
+
 eval "$(getoptions parser_definition parse "$0") exit 1"
 parse "$@"
 eval "set -- $REST"
 
-[ -z ${TASK} ] && echo "Vintage ${VERSION} by Francesco Bianco <bianco@javanile.org>"
+if [ -z "${SILENT}" ]; then
+  if [ -z "${TASK}" ]; then
+    echo "Vintage ${VERSION} by Francesco Bianco <bianco@javanile.org>"
+  else
+    echo "Task: $0 $@"
+  fi
+fi
 
 if [ $# -gt 0 ]; then
 	cmd=$1
@@ -65,31 +89,37 @@ if [ $# -gt 0 ]; then
 			eval "$(getoptions parser_definition_add parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
-			echo "FLAG_A: $FLAG_A"
-			echo "GLOBAL: $GLOBAL"
-			echo "TASK: $TASK"
-      i=0
-      while [ $# -gt 0 ] && i=$((i + 1)); do
+			#echo "FLAG_A: $FLAG_A"
+			#echo "GLOBAL: $GLOBAL"
+			#echo "TASK: $TASK"
+      while [ $# -gt 0 ]; do
         archive=$(echo $1 | cut -d@ -f1)
-        version=$(echo $1@main | cut -d@ -f2)
-        spawn="vintage --task exec https://github.com/francescobianco/vintage/raw/main/archive/${archive}/${version}/setup.sh"
-      	echo "$i: $1 - $spawn"
-      	${spawn}
+        version=$(vintage version "${archive}" "$(echo $1@main | cut -d@ -f2)")
+        [ -z "${version}" ] && error "Missing version $1 on archive."
+        task="vintage --task exec https://github.com/francescobianco/vintage/raw/main/archive/${archive}/${version}/setup.sh"
+        ${task}
       	shift
       done
+			;;
+		version)
+			eval "$(getoptions parser_definition_version parse "$0")"
+			parse "$@"
+			eval "set -- $REST"
+			curl -sL "https://github.com/francescobianco/vintage/raw/main/archive/${1}/MANIFEST.txt"
+			task="vintage --task --silent exec ${version}/setup.sh"
 			;;
 		run)
 			eval "$(getoptions parser_definition_run parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
-			echo "FLAG_B: $FLAG_B"
+			#echo "FLAG_B: $FLAG_B"
 			;;
 		exec)
 			eval "$(getoptions parser_definition_exec parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
-			echo "FLAG_C: $FLAG_C"
-      echo "TASK: $TASK"
+			#echo "FLAG_C: $FLAG_C"
+      #echo "TASK: $TASK"
 			;;
 		--) # no subcommand, arguments only
 	esac
