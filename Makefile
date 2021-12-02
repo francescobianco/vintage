@@ -31,7 +31,8 @@ test-install:
 
 test-version:
 	@sudo make -s install-vintage-files
-	@bash vintage version qbasic
+	@bash vintage -s version vintage
+	@bash vintage -s version vintage --resolve 2
 
 test-add-qbasic:
 	@sudo make -s install-vintage-files

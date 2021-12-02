@@ -40,13 +40,14 @@ parser_definition_version() {
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_B  -b --flag-b
+	param   RESOLVE -r --resolve
 	disp    :usage  -h --help
 }
 
 # shellcheck disable=SC1083
 parser_definition_run() {
 	setup   REST help:usage abbr:true -- \
-		"Usage: ${2##*/} cmd2 [options...] [arguments...]"
+		"Usage: ${2##*/} run [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_B  -b --flag-b
@@ -106,7 +107,7 @@ if [ $# -gt 0 ]; then
 			parse "$@"
 			eval "set -- $REST"
 			manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
-			[ -z "$2" ] && echo "$manifest" || echo "$manifest" | grep "^$2"
+			[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
 			;;
 		run)
 			eval "$(getoptions parser_definition_run parse "$0")"
