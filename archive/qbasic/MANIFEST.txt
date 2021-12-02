@@ -1,1 +1,5 @@
+
+*  QBASIC MANIFEST  *
+
+# Versions:
 main

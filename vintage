@@ -90,13 +90,10 @@ if [ $# -gt 0 ]; then
 			eval "$(getoptions parser_definition_add parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
-			#echo "FLAG_A: $FLAG_A"
-			#echo "GLOBAL: $GLOBAL"
-			#echo "TASK: $TASK"
       while [ $# -gt 0 ]; do
         archive=$(echo $1 | cut -d@ -f1)
-        version=$(vintage version "${archive}" "$(echo $1@main | cut -d@ -f2)")
-        [ -z "${version}" ] && error "Missing version $1 on archive."
+        version=$(vintage --silent version "${archive}" --resolve "$(echo $1@main | cut -d@ -f2)")
+        [ -z "${version}" ] && error "Program or version not found on archive. Missing '$1', visit <https://github.com/francescobianco/vintage> for more details."
         task="vintage --task exec https://github.com/francescobianco/vintage/raw/main/archive/${archive}/${version}/setup.sh"
         ${task}
       	shift
