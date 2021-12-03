@@ -2,6 +2,6 @@
 
 vintage --task download dosshell https://archive.org/download/msdos_dosshell/dosshell.zip
 vintage --task extract dosshell main
-vintage --task copy dosshell main DOSSHELL
+vintage --task copy dosshell/main DOSSHELL
 vintage --task entrypoint DOSSHELL "dosshell.exe"
 vintage --task alias dosshell DOSSHELL

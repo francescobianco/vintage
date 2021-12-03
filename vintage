@@ -210,8 +210,8 @@ if [ $# -gt 0 ]; then
       eval "$(getoptions parser_definition_mount parse "$0")"
       parse "$@"
       eval "set -- $REST"
-      mount="${ARCHIVE_PATH}/$1/$2/$3"
-      image="${ARCHIVE_PATH}/$1/$2/$4"
+      mount="${ARCHIVE_PATH}/$1/$2"
+      image="${ARCHIVE_PATH}/$1/$3"
       [ ! -d "${mount}" ] && mkdir -p "${mount}"
       sudo mount -t "${IMAGE_TYPE}" -o "loop,offset=${IMAGE_OFFSET}" "${image}" "${mount}" && true
       ;;
@@ -219,8 +219,8 @@ if [ $# -gt 0 ]; then
       eval "$(getoptions parser_definition_copy parse "$0")"
       parse "$@"
       eval "set -- $REST"
-      source="${ARCHIVE_PATH}/$1/$2/$3"
-      target="${VINTAGE_PATH}/$4"
+      source="${ARCHIVE_PATH}/$1"
+      target="${VINTAGE_PATH}/$2"
       [ ! -d "${target}" ] && mkdir -p "${target}"
       cp -R "${source}/." "${target}"
       ;;
