@@ -6,7 +6,7 @@ VERSION=0.1
 VINTAGE_PATH=${HOME}/Vintage
 ARCHIVE_PATH=${VINTAGE_PATH}/ARCHIVE
 DOWNLOAD_PATH=${VINTAGE_PATH}/DOWNLOAD
-TEMP_PATH=${VINTAGE_PATH}/TEMP
+ALIAS_PATH=${VINTAGE_PATH}/ALIAS
 
 # shellcheck disable=SC1083
 parser_definition() {
@@ -221,6 +221,17 @@ if [ $# -gt 0 ]; then
       echo "@echo off" > "${entrypoint}"
       echo "$2" >> "${entrypoint}"
       ;;
+    alias)
+      eval "$(getoptions parser_definition_alias parse "$0")"
+      parse "$@"
+      eval "set -- $REST"
+      [ ! -d "${ALIAS_PATH}" ] && mkdir -p "${ALIAS_PATH}"
+      alias="${ALIAS_PATH}/$1"
+      alias_batch="${ALIAS_PATH}/$1.bat"
+      echo "$2" > "${alias}"
+      echo "@echo off" > "${alias_batch}"
+      echo "$2" >> "${alias_batch}"
+      ;;
 		exec)
 			eval "$(getoptions parser_definition_exec parse "$0")"
 			parse "$@"
@@ -228,7 +239,7 @@ if [ $# -gt 0 ]; then
 			temp_dir="$(mktemp -d /tmp/vintage-exec-XXXXXXXX)"
       cd "$temp_dir"
       curl -sfLo setup.sh $1
-      . setup.sh
+      . ${temp_dir}/setup.sh
       rm -fr "$temp_dir"
 			;;
 		run)
