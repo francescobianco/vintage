@@ -230,6 +230,8 @@ if [ $# -gt 0 ]; then
       eval "set -- $REST"
       entrypoint="${VINTAGE_PATH}/$1/__RUN.BAT"
       echo "@echo off" > "${entrypoint}"
+      echo "F:" >> "${entrypoint}"
+      echo "cd $1" >> "${entrypoint}"
       echo "$2" >> "${entrypoint}"
       ;;
     alias)
@@ -258,7 +260,7 @@ if [ $# -gt 0 ]; then
 			parse "$@"
 			eval "set -- $REST"
 			alias=$(cat "${ALIAS_PATH}/$1")
-      dosemu -d "${VINTAGE_PATH}" -T -E "F:\\${alias}\\__RUN.BAT"
+      dosemu -d "${VINTAGE_PATH}" -E "F:\\${alias}\\__RUN.BAT"
 			;;
 		--) # no subcommand, arguments only
 	esac
