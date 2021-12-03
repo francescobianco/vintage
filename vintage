@@ -79,7 +79,7 @@ parser_definition_mount() {
 		"Usage: ${2##*/} mount [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
-	param   FILE_FORMAT    --file-format
+	param   IMAGE_FORMAT    --image-format
 	disp    :usage      -h --help
 }
 
@@ -192,8 +192,9 @@ if [ $# -gt 0 ]; then
       mount="${ARCHIVE_PATH}/$1/$2/$3"
       image="${ARCHIVE_PATH}/$1/$2/$4"
       [ ! -d "${mount}" ] && mkdir -p "${mount}"
-      FILE_FORMAT=
-      case $FILE_FORMAT in
+      case $IMAGE_FORMAT in
+      	ntfs)
+      	  sudo mount -t ntfs "${image}" "${mount}" && true
       	*)
           sudo mount -o loop "${image}" "${mount}" && true
           ;;
