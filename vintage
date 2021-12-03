@@ -3,6 +3,8 @@ set -eu
 
 # shellcheck disable=SC2034
 VERSION=0.1
+VINTAGE_PATH=${HOME}/Vintage
+DOWNLOAD_PATH=${VINTAGE_PATH}/DOWNLOAD
 
 # shellcheck disable=SC1083
 parser_definition() {
@@ -19,8 +21,10 @@ parser_definition() {
 	msg -- '' 'Commands:'
 	cmd add -- "subcommand 1"
 	cmd version -- "subcommand 2"
-	cmd run -- "subcommand 3"
-  cmd exec -- "subcommand 4"
+	cmd download -- "subcommand 3"
+	cmd extract -- "subcommand 4"
+	cmd run -- "subcommand 5"
+  cmd exec -- "subcommand 6"
 }
 
 # shellcheck disable=SC1083
@@ -37,6 +41,28 @@ parser_definition_add() {
 parser_definition_version() {
 	setup   REST help:usage abbr:true -- \
 		"Usage: ${2##*/} version [options...] [arguments...]"
+	msg -- '' 'getoptions subcommand example' ''
+	msg -- 'Options:'
+	flag    FLAG_B  -b --flag-b
+	param   RESOLVE -r --resolve
+	disp    :usage  -h --help
+}
+
+# shellcheck disable=SC1083
+parser_definition_download() {
+	setup   REST help:usage abbr:true -- \
+		"Usage: ${2##*/} download [options...] [arguments...]"
+	msg -- '' 'getoptions subcommand example' ''
+	msg -- 'Options:'
+	flag    FLAG_B  -b --flag-b
+	param   RESOLVE -r --resolve
+	disp    :usage  -h --help
+}
+
+# shellcheck disable=SC1083
+parser_definition_extract() {
+	setup   REST help:usage abbr:true -- \
+		"Usage: ${2##*/} extract [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_B  -b --flag-b
@@ -106,6 +132,26 @@ if [ $# -gt 0 ]; then
 			manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
 			[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
 			;;
+    download)
+      eval "$(getoptions parser_definition_download parse "$0")"
+      parse "$@"
+      eval "set -- $REST"
+      #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
+      #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
+      [ ! -d "${DOWNLOAD_PATH}" ] && mkdir -p "${DOWNLOAD_PATH}"
+      download="${DOWNLOAD_PATH}/$1"
+      curl -#Lo "${download}" $2
+      ls -l "${download}"
+      echo "Download complete."
+      ;;
+    extract)
+      eval "$(getoptions parser_definition_extract parse "$0")"
+      parse "$@"
+      eval "set -- $REST"
+      #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
+      #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
+      echo "EXTRACT"
+      ;;
 		run)
 			eval "$(getoptions parser_definition_run parse "$0")"
 			parse "$@"
