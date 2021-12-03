@@ -4,7 +4,9 @@ set -eu
 # shellcheck disable=SC2034
 VERSION=0.1
 VINTAGE_PATH=${HOME}/Vintage
+ARCHIVE_PATH=${VINTAGE_PATH}/ARCHIVE
 DOWNLOAD_PATH=${VINTAGE_PATH}/DOWNLOAD
+TEMP_PATH=${VINTAGE_PATH}/TEMP
 
 # shellcheck disable=SC1083
 parser_definition() {
@@ -65,9 +67,8 @@ parser_definition_extract() {
 		"Usage: ${2##*/} extract [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
-	flag    FLAG_B  -b --flag-b
-	param   RESOLVE -r --resolve
-	disp    :usage  -h --help
+	param   FILE_FORMAT    --file-format
+	disp    :usage      -h --help
 }
 
 # shellcheck disable=SC1083
@@ -139,7 +140,7 @@ if [ $# -gt 0 ]; then
       #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
       #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
       [ ! -d "${DOWNLOAD_PATH}" ] && mkdir -p "${DOWNLOAD_PATH}"
-      download="${DOWNLOAD_PATH}/$1"
+      download="${DOWNLOAD_PATH}/$1.pkg"
       curl -#Lo "${download}" $2
       ls -l "${download}"
       echo "Download complete."
@@ -150,7 +151,19 @@ if [ $# -gt 0 ]; then
       eval "set -- $REST"
       #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
       #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
-      echo "EXTRACT"
+      archive="${ARCHIVE_PATH}/$1/$2"
+      download="${DOWNLOAD_PATH}/$1.pkg"
+      [ ! -d "${archive}" ] && mkdir -p "${archive}"
+      ls -l "${download}"
+      cd "$archive"
+      case $FILE_FORMAT in
+      	7z|7zip)
+      	  7za qx "${download}"
+      	  ;;
+        *)
+          unzip "${download}"
+          ;;
+      esac
       ;;
 		run)
 			eval "$(getoptions parser_definition_run parse "$0")"

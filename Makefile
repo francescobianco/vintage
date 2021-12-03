@@ -11,7 +11,7 @@ install: install-dependencies install-vintage-files
 	@echo Installation complete.
 
 install-dependencies:
-	@apt-get install -y --no-install-recommends xterm curl > /dev/null
+	@apt-get install -y --no-install-recommends xterm curl p7zip-full > /dev/null
 	@curl -sLo $(PREFIX)/bin/getoptions https://github.com/ko1nksm/getoptions/releases/latest/download/getoptions
 	@chmod +x $(PREFIX)/bin/getoptions
 
@@ -46,6 +46,11 @@ test-add-qbasic:
 test-download-qbasic:
 	@sudo make -s install-vintage-files
 	@bash vintage download qbasic https://winworldpc.com/download/e280b0c3-8602-c392-c592-7311c3a5c28f/from/c39ac2af-c381-c2bf-1b25-11c3a4e284a2
+
+test-extract-qbasic:
+	@sudo make -s install-vintage-files
+	@bash vintage download qbasic https://winworldpc.com/download/e280b0c3-8602-c392-c592-7311c3a5c28f/from/c39ac2af-c381-c2bf-1b25-11c3a4e284a2
+	@bash vintage extract qbasic main --file-format 7z
 
 test-qbasic: test-install
 	@vintage run qbasic edit
