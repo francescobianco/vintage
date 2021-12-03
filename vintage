@@ -27,8 +27,9 @@ parser_definition() {
 	cmd extract -- "subcommand 4"
 	cmd mount -- "subcommand 5"
 	cmd copy -- "subcommand 6"
-	cmd run -- "subcommand 7"
+	cmd entrypoint -- "subcommand 7"
   cmd exec -- "subcommand 8"
+	cmd run -- "subcommand 9"
 }
 
 # shellcheck disable=SC1083
@@ -95,13 +96,13 @@ parser_definition_copy() {
 }
 
 # shellcheck disable=SC1083
-parser_definition_run() {
+parser_definition_entrypoint() {
 	setup   REST help:usage abbr:true -- \
-		"Usage: ${2##*/} run [options...] [arguments...]"
+		"Usage: ${2##*/} entrypoint [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
-	flag    FLAG_B  -b --flag-b
-	disp    :usage  -h --help
+	param   FILE_FORMAT    --file-format
+	disp    :usage      -h --help
 }
 
 # shellcheck disable=SC1083
@@ -111,6 +112,16 @@ parser_definition_exec() {
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_C  -c --flag-c
+	disp    :usage  -h --help
+}
+
+# shellcheck disable=SC1083
+parser_definition_run() {
+	setup   REST help:usage abbr:true -- \
+		"Usage: ${2##*/} run [options...] [arguments...]"
+	msg -- '' 'getoptions subcommand example' ''
+	msg -- 'Options:'
+	flag    FLAG_B  -b --flag-b
 	disp    :usage  -h --help
 }
 
@@ -162,7 +173,7 @@ if [ $# -gt 0 ]; then
       eval "set -- $REST"
       [ ! -d "${DOWNLOAD_PATH}" ] && mkdir -p "${DOWNLOAD_PATH}"
       download="${DOWNLOAD_PATH}/$1.pkg"
-      curl -#fLo "${download}" $2
+      curl -sfLo "${download}" $2
       ;;
     extract)
       eval "$(getoptions parser_definition_extract parse "$0")"
@@ -178,7 +189,7 @@ if [ $# -gt 0 ]; then
       	  7za x -y -bsp0 -bso0 "${download}"
       	  ;;
         *)
-          unzip -o "${download}"
+          unzip -q -o "${download}"
           ;;
       esac
       ;;
@@ -189,25 +200,24 @@ if [ $# -gt 0 ]; then
       mount="${ARCHIVE_PATH}/$1/$2/$3"
       image="${ARCHIVE_PATH}/$1/$2/$4"
       [ ! -d "${mount}" ] && mkdir -p "${mount}"
-      case $IMAGE_TYPE in
-      	ntfs)
-      	  echo sudo mount -t ntfs "${image}" "${mount}" && true
-      	  ;;
-      	*)
-          sudo mount -o loop "${image}" "${mount}" && true
-          ;;
-      esac
+      sudo mount -t "${IMAGE_TYPE}" -o "loop,offset=${IMAGE_OFFSET}" "${image}" "${mount}" && true
       ;;
     copy)
       eval "$(getoptions parser_definition_copy parse "$0")"
       parse "$@"
       eval "set -- $REST"
-      #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
-      #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
       source="${ARCHIVE_PATH}/$1/$2/$3"
       target="${VINTAGE_PATH}/$4"
       [ ! -d "${target}" ] && mkdir -p "${target}"
       cp -R "${source}/." "${target}"
+      ;;
+    entrypoint)
+      eval "$(getoptions parser_definition_entrypoint parse "$0")"
+      parse "$@"
+      eval "set -- $REST"
+      entrypoint="${VINTAGE_PATH}/$1/__RUN.BAT"
+      echo "@echo off" > "${entrypoint}"
+      echo "$2" >> "${entrypoint}"
       ;;
 		exec)
 			eval "$(getoptions parser_definition_exec parse "$0")"
@@ -215,7 +225,7 @@ if [ $# -gt 0 ]; then
 			eval "set -- $REST"
 			temp_dir="$(mktemp -d /tmp/vintage-exec-XXXXXXXX)"
       cd "$temp_dir"
-      curl -#Lo setup.sh $1
+      curl -sfLo setup.sh $1
       . setup.sh
       rm -fr "$temp_dir"
 			;;
