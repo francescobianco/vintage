@@ -58,5 +58,8 @@ test-mount-qbasic: test-extract-qbasic
 test-copy-qbasic: test-mount-qbasic
 	@bash vintage -t copy qbasic main disk01 QBASIC
 
+test-exec: test-install-vintage-files
+	@bash vintage --task exec https://raw.githubusercontent.com/francescobianco/vintage/main/archive/fritz/main/setup.sh
+
 test-qbasic: test-install
 	@vintage run qbasic edit

@@ -127,7 +127,7 @@ if [ -z "${SILENT}" ]; then
   if [ -z "${TASK}" ]; then
     echo "Vintage ${VERSION} by Francesco Bianco <bianco@javanile.org>"
   else
-    echo "Task: $0 $@"
+    echo "==> Task: vintage $@"
   fi
 fi
 
@@ -159,13 +159,9 @@ if [ $# -gt 0 ]; then
       eval "$(getoptions parser_definition_download parse "$0")"
       parse "$@"
       eval "set -- $REST"
-      #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
-      #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
       [ ! -d "${DOWNLOAD_PATH}" ] && mkdir -p "${DOWNLOAD_PATH}"
       download="${DOWNLOAD_PATH}/$1.pkg"
-      curl -#Lo "${download}" $2
-      ls -l "${download}"
-      echo "Download complete."
+      curl -#fLo "${download}" $2
       ;;
     extract)
       eval "$(getoptions parser_definition_extract parse "$0")"
@@ -176,11 +172,11 @@ if [ $# -gt 0 ]; then
       archive="${ARCHIVE_PATH}/$1/$2"
       download="${DOWNLOAD_PATH}/$1.pkg"
       [ ! -d "${archive}" ] && mkdir -p "${archive}"
-      ls -l "${download}"
+      #ls -l "${download}"
       cd "$archive"
       case $FILE_FORMAT in
       	7z|7zip)
-      	  7za x -y "${download}"
+      	  7za x -y -bsp0 -bso0 "${download}"
       	  ;;
         *)
           unzip "${download}"
@@ -214,18 +210,21 @@ if [ $# -gt 0 ]; then
       [ ! -d "${target}" ] && mkdir -p "${target}"
       cp -R "${source}/." "${target}"
       ;;
+		exec)
+			eval "$(getoptions parser_definition_exec parse "$0")"
+			parse "$@"
+			eval "set -- $REST"
+			temp_dir="$(mktemp -d /tmp/vintage-exec-XXXXXXXX)"
+      cd "$temp_dir"
+      curl -#Lo setup.sh $1
+      . setup.sh
+      rm -fr "$temp_dir"
+			;;
 		run)
 			eval "$(getoptions parser_definition_run parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
 			#echo "FLAG_B: $FLAG_B"
-			;;
-		exec)
-			eval "$(getoptions parser_definition_exec parse "$0")"
-			parse "$@"
-			eval "set -- $REST"
-			#echo "FLAG_C: $FLAG_C"
-      #echo "TASK: $TASK"
 			;;
 		--) # no subcommand, arguments only
 	esac
