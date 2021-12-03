@@ -79,8 +79,9 @@ parser_definition_mount() {
 		"Usage: ${2##*/} mount [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
-	param   IMAGE_FORMAT    --image-format
-	disp    :usage      -h --help
+	param   IMAGE_TYPE      --image-type
+  param   IMAGE_OFFSET    --image-offset
+	disp    :usage       -h --help
 }
 
 # shellcheck disable=SC1083
@@ -167,8 +168,6 @@ if [ $# -gt 0 ]; then
       eval "$(getoptions parser_definition_extract parse "$0")"
       parse "$@"
       eval "set -- $REST"
-      #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
-      #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
       archive="${ARCHIVE_PATH}/$1/$2"
       download="${DOWNLOAD_PATH}/$1.pkg"
       [ ! -d "${archive}" ] && mkdir -p "${archive}"
@@ -179,7 +178,7 @@ if [ $# -gt 0 ]; then
       	  7za x -y -bsp0 -bso0 "${download}"
       	  ;;
         *)
-          unzip "${download}"
+          unzip -o "${download}"
           ;;
       esac
       ;;
@@ -187,14 +186,13 @@ if [ $# -gt 0 ]; then
       eval "$(getoptions parser_definition_mount parse "$0")"
       parse "$@"
       eval "set -- $REST"
-      #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
-      #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
       mount="${ARCHIVE_PATH}/$1/$2/$3"
       image="${ARCHIVE_PATH}/$1/$2/$4"
       [ ! -d "${mount}" ] && mkdir -p "${mount}"
-      case $IMAGE_FORMAT in
+      case $IMAGE_TYPE in
       	ntfs)
-      	  sudo mount -t ntfs "${image}" "${mount}" && true
+      	  echo sudo mount -t ntfs "${image}" "${mount}" && true
+      	  ;;
       	*)
           sudo mount -o loop "${image}" "${mount}" && true
           ;;
