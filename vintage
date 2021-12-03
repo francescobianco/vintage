@@ -25,8 +25,10 @@ parser_definition() {
 	cmd version -- "subcommand 2"
 	cmd download -- "subcommand 3"
 	cmd extract -- "subcommand 4"
-	cmd run -- "subcommand 5"
-  cmd exec -- "subcommand 6"
+	cmd mount -- "subcommand 5"
+	cmd copy -- "subcommand 6"
+	cmd run -- "subcommand 7"
+  cmd exec -- "subcommand 8"
 }
 
 # shellcheck disable=SC1083
@@ -65,6 +67,26 @@ parser_definition_download() {
 parser_definition_extract() {
 	setup   REST help:usage abbr:true -- \
 		"Usage: ${2##*/} extract [options...] [arguments...]"
+	msg -- '' 'getoptions subcommand example' ''
+	msg -- 'Options:'
+	param   FILE_FORMAT    --file-format
+	disp    :usage      -h --help
+}
+
+# shellcheck disable=SC1083
+parser_definition_mount() {
+	setup   REST help:usage abbr:true -- \
+		"Usage: ${2##*/} mount [options...] [arguments...]"
+	msg -- '' 'getoptions subcommand example' ''
+	msg -- 'Options:'
+	param   FILE_FORMAT    --file-format
+	disp    :usage      -h --help
+}
+
+# shellcheck disable=SC1083
+parser_definition_copy() {
+	setup   REST help:usage abbr:true -- \
+		"Usage: ${2##*/} copy [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	param   FILE_FORMAT    --file-format
@@ -158,12 +180,39 @@ if [ $# -gt 0 ]; then
       cd "$archive"
       case $FILE_FORMAT in
       	7z|7zip)
-      	  7za qx "${download}"
+      	  7za x -y "${download}"
       	  ;;
         *)
           unzip "${download}"
           ;;
       esac
+      ;;
+    mount)
+      eval "$(getoptions parser_definition_mount parse "$0")"
+      parse "$@"
+      eval "set -- $REST"
+      #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
+      #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
+      mount="${ARCHIVE_PATH}/$1/$2/$3"
+      image="${ARCHIVE_PATH}/$1/$2/$4"
+      [ ! -d "${mount}" ] && mkdir -p "${mount}"
+      FILE_FORMAT=
+      case $FILE_FORMAT in
+      	*)
+          sudo mount -o loop "${image}" "${mount}" && true
+          ;;
+      esac
+      ;;
+    copy)
+      eval "$(getoptions parser_definition_copy parse "$0")"
+      parse "$@"
+      eval "set -- $REST"
+      #manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
+      #[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
+      source="${ARCHIVE_PATH}/$1/$2/$3"
+      target="${VINTAGE_PATH}/$4"
+      [ ! -d "${target}" ] && mkdir -p "${target}"
+      cp -R "${source}/." "${target}"
       ;;
 		run)
 			eval "$(getoptions parser_definition_run parse "$0")"
