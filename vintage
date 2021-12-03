@@ -164,8 +164,10 @@ if [ $# -gt 0 ]; then
 			eval "$(getoptions parser_definition_version parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
-			manifest=$(curl -sL "https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt")
-			[ -z "$RESOLVE" ] && echo "$manifest" || echo "$manifest" | grep "^$RESOLVE" | head -1
+			manifest="${ARCHIVE_PATH}/$1/MANIFEST.txt"
+			manifest_url="https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt"
+			curl -sfLo "${manifest}" "${manifest_url}"
+			[ -z "$RESOLVE" ] && cat "$manifest" || cat "$manifest" | grep "^$RESOLVE" | head -1
 			;;
     download)
       eval "$(getoptions parser_definition_download parse "$0")"
