@@ -28,8 +28,9 @@ parser_definition() {
 	cmd mount -- "subcommand 5"
 	cmd copy -- "subcommand 6"
 	cmd entrypoint -- "subcommand 7"
-  cmd exec -- "subcommand 8"
-	cmd run -- "subcommand 9"
+  cmd alias -- "subcommand 8"
+  cmd exec -- "subcommand 9"
+	cmd run -- "subcommand 10"
 }
 
 # shellcheck disable=SC1083
@@ -99,6 +100,16 @@ parser_definition_copy() {
 parser_definition_entrypoint() {
 	setup   REST help:usage abbr:true -- \
 		"Usage: ${2##*/} entrypoint [options...] [arguments...]"
+	msg -- '' 'getoptions subcommand example' ''
+	msg -- 'Options:'
+	param   FILE_FORMAT    --file-format
+	disp    :usage      -h --help
+}
+
+# shellcheck disable=SC1083
+parser_definition_alias() {
+	setup   REST help:usage abbr:true -- \
+		"Usage: ${2##*/} alias [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	param   FILE_FORMAT    --file-format
@@ -246,7 +257,8 @@ if [ $# -gt 0 ]; then
 			eval "$(getoptions parser_definition_run parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
-			#echo "FLAG_B: $FLAG_B"
+			alias=$(cat "${ALIAS_PATH}/$1")
+      dosemu -d "${VINTAGE_PATH}" -T -E "F:\\${alias}\\__RUN.BAT"
 			;;
 		--) # no subcommand, arguments only
 	esac

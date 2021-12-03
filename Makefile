@@ -60,5 +60,5 @@ test-copy-qbasic: test-mount-qbasic
 test-exec: test-install-vintage-files
 	@bash vintage --task exec https://raw.githubusercontent.com/francescobianco/vintage/main/archive/fritz/main/setup.sh
 
-test-qbasic: test-install
-	@vintage run qbasic edit
+test-run: test-install-vintage-files
+	@vintage run fritz
