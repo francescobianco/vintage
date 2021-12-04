@@ -4,5 +4,5 @@ vintage --task download qbasic https://winworldpc.com/download/e280b0c3-8602-c39
 vintage --task extract qbasic main --file-format 7z
 vintage --task mount qbasic/main disk01 "Microsoft DOS QBasic 1.0/disk01.img"
 vintage --task copy qbasic/main/disk01 QBASIC
-vintage --task entrypoint QBASIC "qbasic.exe"
+vintage --task shim QBASIC "qbasic.exe"
 vintage --task alias qbasic QBASIC
