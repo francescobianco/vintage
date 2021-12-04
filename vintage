@@ -14,11 +14,12 @@ parser_definition() {
 		"Usage: ${2##*/} [global options...] [command] [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
-	flag    GLOBAL  -g --global    -- "global flag"
-	flag    TASK       --task      -- "global flag"
-	flag    SILENT  -s --silent    -- "global flag"
-  disp    :usage  -h --help
-	disp    VERSION    --version
+	flag    GLOBAL   -g --global    -- "global flag"
+	flag    TERMINAL -t --terminal  -- "global flag"
+	flag    TASK        --task      -- "global flag"
+	flag    SILENT   -s --silent    -- "global flag"
+  disp    :usage   -h --help
+	disp    VERSION     --version
 
 	msg -- '' 'Commands:'
 	cmd add -- "subcommand 1"
@@ -175,10 +176,12 @@ if [ $# -gt 0 ]; then
 			eval "$(getoptions parser_definition_version parse "$0")"
 			parse "$@"
 			eval "set -- $REST"
-			manifest="${ARCHIVE_PATH}/$1/MANIFEST.txt"
+			manifest_dir="${ARCHIVE_PATH}/$1"
+			[ ! -d "${manifest_dir}" ] && mkdir -p "${manifest_dir}"
+			manifest_file="${ARCHIVE_PATH}/$1/MANIFEST.txt"
 			manifest_url="https://raw.githubusercontent.com/francescobianco/vintage/main/archive/$1/MANIFEST.txt"
-			curl -sfLo "${manifest}" "${manifest_url}"
-			[ -z "$RESOLVE" ] && cat "$manifest" || cat "$manifest" | grep "^$RESOLVE" | head -1
+			curl -sfLo "${manifest_file}" "${manifest_url}"
+			[ -z "$RESOLVE" ] && cat "$manifest_file" || cat "$manifest_file" | grep "^$RESOLVE" | head -1
 			;;
     download)
       eval "$(getoptions parser_definition_download parse "$0")"
@@ -260,7 +263,8 @@ if [ $# -gt 0 ]; then
 			parse "$@"
 			eval "set -- $REST"
 			alias=$(cat "${ALIAS_PATH}/$1")
-      dosemu -d "${VINTAGE_PATH}" -E "F:\\${alias}\\__RUN.BAT"
+      [ -n "${TERMINAL}" ] && TERMINAL=-t
+      dosemu ${TERMINAL} -d "${VINTAGE_PATH}" -E "F:\\${alias}\\__RUN.BAT"
 			;;
 		--) # no subcommand, arguments only
 	esac
