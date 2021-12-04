@@ -23,6 +23,9 @@ install-vintage-files:
 uninstall:
 	@rm -f $(PREFIX)/bin/$(BIN)
 
+demo:
+	@curl -sL git.io/ghostplay | bash -s contrib/demo.sh
+
 ## =====
 ## Tests
 ## =====

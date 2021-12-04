@@ -1,5 +1,7 @@
 # vintage
 
+> The "Vintage" Software Manager
+
 Vintage is a command-line tool to manage old DOS package and run it on DOSEMU or DOSBOX.
 
 ## Install
@@ -21,4 +23,3 @@ Execute installed application
 ```
 vintage run qbasic
 ```
-
