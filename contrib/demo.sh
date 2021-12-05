@@ -23,11 +23,11 @@ sleep 3
 # Add Your Nostalgic Software
 #
 #ghostplay silent
-sleep 1
+sleep 2
 #ghostplay end
 vintage add qbasic
 #ghostplay silent
-sleep 3
+sleep 4
 #ghostplay end
 
 #
@@ -36,7 +36,7 @@ sleep 3
 # just type:  vintage run qbasic
 #
 #ghostplay silent
-sleep 1
+sleep 3
 #ghostplay end
 vintage run -t qbasic
 #ghostplay silent
