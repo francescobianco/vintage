@@ -8,7 +8,7 @@ Vintage is a command-line tool to manage old DOS package and run it on DOSEMU or
 
 ## Install
 
-Install "vintage" tool from the web with an easy cRUL script
+Install "vintage" tool from the web with an easy cURL script
 
 ```shell
 curl -s binst.tk | sudo bash -s francescobianco/vintage
