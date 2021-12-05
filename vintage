@@ -30,6 +30,7 @@ parser_definition() {
   cmd alias -- "subcommand 8"
   cmd exec -- "subcommand 9"
 	cmd run -- "subcommand 10"
+	cmd shell -- "subcommand 11"
 }
 
 # shellcheck disable=SC1083
@@ -129,6 +130,16 @@ parser_definition_exec() {
 parser_definition_run() {
 	setup   REST help:usage abbr:true -- \
 		"Usage: ${2##*/} run [options...] [arguments...]"
+	msg -- '' 'getoptions subcommand example' ''
+	msg -- 'Options:'
+	flag    TERMINAL  -t --terminal
+	disp    :usage    -h --help
+}
+
+# shellcheck disable=SC1083
+parser_definition_shell() {
+	setup   REST help:usage abbr:true -- \
+		"Usage: ${2##*/} shell [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    TERMINAL  -t --terminal
@@ -264,6 +275,14 @@ if [ $# -gt 0 ]; then
       [ -n "${TERMINAL}" ] && TERMINAL=-t
       dosemu ${TERMINAL} -d "${VINTAGE_PATH}" -E "F:\\${alias}\\__RUN.BAT"
 			;;
+    shell)
+      eval "$(getoptions parser_definition_run shell "$0")"
+      parse "$@"
+      eval "set -- $REST"
+      alias=$(cat "${ALIAS_PATH}/$1")
+      [ -n "${TERMINAL}" ] && TERMINAL=-t
+      dosemu ${TERMINAL} -d "${VINTAGE_PATH}"
+      ;;
 		--) # no subcommand, arguments only
 	esac
 fi
