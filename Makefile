@@ -31,6 +31,7 @@ install-contrib:
 	@npm install --global asciicast2gif
 
 demo:
+	@date > contrib/demo.ts
 	@git add . && git commit -am "Start Recording" && git push
 	@asciinema rec --overwrite -c "curl -sL git.io/ghostplay | bash -s contrib/demo.sh" contrib/demo.cast
 	@sed -e 's/"width": [0-9]*,/"width": 80,/' -e 's/"height": [0-9]*,/"height": 25,/' -i contrib/demo.cast
