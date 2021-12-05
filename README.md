@@ -1,4 +1,4 @@
-# vintage
+# 🧞 vintage
 
 > The "Vintage" Software Manager
 
