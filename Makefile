@@ -76,3 +76,6 @@ test-exec: test-install-vintage-files
 
 test-run: test-install-vintage-files
 	@vintage --task run -t qbasic
+
+test-shell: test-install-vintage-files
+	@vintage --task shell -t

@@ -276,10 +276,9 @@ if [ $# -gt 0 ]; then
       dosemu ${TERMINAL} -d "${VINTAGE_PATH}" -E "F:\\${alias}\\__RUN.BAT"
 			;;
     shell)
-      eval "$(getoptions parser_definition_run shell "$0")"
+      eval "$(getoptions parser_definition_shell parse "$0")"
       parse "$@"
       eval "set -- $REST"
-      alias=$(cat "${ALIAS_PATH}/$1")
       [ -n "${TERMINAL}" ] && TERMINAL=-t
       dosemu ${TERMINAL} -d "${VINTAGE_PATH}"
       ;;
