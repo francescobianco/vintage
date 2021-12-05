@@ -28,15 +28,17 @@ uninstall:
 ## =======
 install-contrib:
 	@apt-get install -y --no-install-recommends xterm curl p7zip-full dh-autoreconf > /dev/null
-	@npm install --global asciicast2gif
 
 demo:
-	@date > contrib/demo.ts
-	@git add . && git commit -am "Start Recording" && git push
+	#@date > contrib/demo.ts
+	#@git add . && git commit -am "Start Recording" && git push
 	@asciinema rec --overwrite -c "curl -sL git.io/ghostplay | bash -s contrib/demo.sh" contrib/demo.cast
-	@sed -e 's/"width": [0-9]*,/"width": 80,/' -e 's/"height": [0-9]*,/"height": 25,/' -i contrib/demo.cast
+	@sed -e 's/"width": [0-9]*,/"width": 80,/' \
+		 -e 's/"height": [0-9]*,/"height": 25,/' \
+		 -e 's/\[sudo\] password for .*:/[sudo\] password for user:/' \
+		 -i contrib/demo.cast
 	@docker run --rm -v $$PWD:/data:rw asciinema/asciicast2gif -w 80 -h 25 -s 2 -t solarized-dark contrib/demo.cast contrib/demo.gif
-	@chmod 777 -R contrib
+	@sudo chmod 777 -R contrib
 
 ## =====
 ## Tests
