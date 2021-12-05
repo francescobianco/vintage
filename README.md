@@ -4,6 +4,8 @@
 
 Vintage is a command-line tool to manage old DOS package and run it on DOSEMU or DOSBOX.
 
+![Install Vintage Software Manager](contrib/demo.gif)
+
 ## Install
 
 ```shell
