@@ -57,7 +57,7 @@ test-add-missing:
 	@bash vintage add missing@missing || true
 
 test-add: test-install-vintage-files
-	@bash vintage add dosshell
+	@bash vintage add qbasic
 
 test-download-qbasic: test-install-vintage-files
 	@bash vintage -t download qbasic https://winworldpc.com/download/e280b0c3-8602-c392-c592-7311c3a5c28f/from/c39ac2af-c381-c2bf-1b25-11c3a4e284a2

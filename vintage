@@ -81,8 +81,8 @@ parser_definition_mount() {
 		"Usage: ${2##*/} mount [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
-	param   IMAGE_TYPE      --image-type
-  param   IMAGE_OFFSET    --image-offset
+	param   IMAGE_TYPE      --image-type init:="auto"
+  param   IMAGE_OFFSET    --image-offset init:="0"
 	disp    :usage       -h --help
 }
 
@@ -198,7 +198,8 @@ if [ $# -gt 0 ]; then
       eval "set -- $REST"
       [ ! -d "${DOWNLOAD_PATH}" ] && mkdir -p "${DOWNLOAD_PATH}"
       download="${DOWNLOAD_PATH}/$1.pkg"
-      curl -sfLo "${download}" $2
+      rm -f ${download}
+      curl -skfLo "${download}" $2
       ;;
     extract)
       eval "$(getoptions parser_definition_extract parse "$0")"
