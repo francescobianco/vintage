@@ -14,8 +14,6 @@ parser_definition() {
 		"Usage: ${2##*/} [global options...] [command] [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
-	flag    GLOBAL   -g --global    -- "global flag"
-	flag    TERMINAL -t --terminal  -- "global flag"
 	flag    TASK        --task      -- "global flag"
 	flag    SILENT   -s --silent    -- "global flag"
   disp    :usage   -h --help
@@ -133,8 +131,8 @@ parser_definition_run() {
 		"Usage: ${2##*/} run [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
-	flag    FLAG_B  -b --flag-b
-	disp    :usage  -h --help
+	flag    TERMINAL  -t --terminal
+	disp    :usage    -h --help
 }
 
 # shellcheck disable=SC1083

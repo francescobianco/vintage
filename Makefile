@@ -23,8 +23,19 @@ install-vintage-files:
 uninstall:
 	@rm -f $(PREFIX)/bin/$(BIN)
 
+## =======
+## Contrib
+## =======
+install-contrib:
+	@apt-get install -y --no-install-recommends xterm curl p7zip-full dh-autoreconf > /dev/null
+	@npm install --global asciicast2gif
+
 demo:
-	@curl -sL git.io/ghostplay | bash -s contrib/demo.sh
+	@git add . && git commit -am "Start Recording" && git push
+	@asciinema rec --overwrite -c "curl -sL git.io/ghostplay | bash -s contrib/demo.sh" contrib/demo.cast
+	@sed -e 's/"width": [0-9]*,/"width": 80,/' -e 's/"height": [0-9]*,/"height": 25,/' -i contrib/demo.cast
+	@docker run --rm -v $$PWD:/data:rw asciinema/asciicast2gif -w 80 -h 25 -s 2 -t solarized-dark contrib/demo.cast contrib/demo.gif
+	@chmod 777 -R contrib
 
 ## =====
 ## Tests
@@ -64,4 +75,4 @@ test-exec: test-install-vintage-files
 	@bash vintage --task exec https://raw.githubusercontent.com/francescobianco/vintage/main/archive/fritz/main/setup.sh
 
 test-run: test-install-vintage-files
-	@vintage run fritz
+	@vintage --task run -t qbasic
